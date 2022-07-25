@@ -1,0 +1,63 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block side %}
+<div class="border-right border-warning h-100">Name</div>
+<h3>{{name}} {{name2}}</h3>
+<div class="text-center">
+  {% for post in posts %}
+  <img src="{{post.profile_pic.url}}" alt="profile pic" class="img-thumbnail" width="250px" height="150px">
+  {% endfor %}
+</div>
+{% endblock side %}
+{% block content %}
+
+<div class="col-sm-10">
+  {% if messages %}
+  {% for message in messages %}
+      <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} mt-3" role="alert">{{message}}</div>
+  {% endfor %}
+{% endif %}
+    <h3 class="text-dark">Dashboard Page</h3>
+    {% if perms.app.add_profile %}
+    <a href="{% url 'addpost' %}" class="btn btn-success">Add Profile</a>
+    {% endif %}
+    <div class="container">
+        <table class="table caption-top text-white">
+            <caption class="text-center">List of Posts</caption>
+            <thead>  
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">User</th>
+                <th scope="col">Type</th>
+                <th scope="col">Address</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+              <tr>
+                <th scope="row">{{post.id}}</th>
+                <td>{{post.user}}</td>
+                <td>{{post.type}}</td>
+                <td>{{post.line}} {{post.city}} {{post.state}} {{post.pincode}}</td>
+                <td>
+                {% if perms.app.change_profile %}
+                <a href="{% url 'updatepost' post.id %}" class="btn btn-warning">Edit</a>
+                {% endif %}
+                {% if perms.app.delete_profile %}
+                <form action="{% url 'deletepost' post.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-danger btn-sm mt-2" value="Delete">
+                </form>
+                {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+    </div>
+
+
+</div>
+
+{% endblock content%}
